@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"; // updated, swap display font to match Stitch typography
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import { WalletProvider } from "@/components/providers/WalletProvider";
+import dynamic from "next/dynamic";
+
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const WalletProvider = dynamic(
+  () => import("@/components/providers/WalletProvider").then(mod => mod.WalletProvider),
+  { ssr: false }
+);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
