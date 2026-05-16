@@ -1,0 +1,19 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+via_ir = true
+optimizer = true
+optimizer_runs = 200
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+[rpc_endpoints]
+0g_testnet = "${NEXT_PUBLIC_RPC_URL_0G}"
+0g_mainnet = "${RPC_URL_0G_MAINNET}"
+
+[etherscan]
+0g_testnet = { key = "${EXPLORER_API_KEY}", url = "https://chainscan-galileo.0g.ai/open/api", chain = 16602 }

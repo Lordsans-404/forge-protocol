@@ -1,0 +1,250 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      { "name": "_authority", "type": "address", "internalType": "address" },
+      { "name": "_token", "type": "address", "internalType": "address" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "createCommitment",
+    "inputs": [
+      { "name": "stakeAmount", "type": "uint256", "internalType": "uint256" },
+      { "name": "durationDays", "type": "uint16", "internalType": "uint16" },
+      { "name": "dailyTargetMinutes", "type": "uint16", "internalType": "uint16" }
+    ],
+    "outputs": [
+      { "name": "commitmentId", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getCommitment",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct ForgeProtocol.Commitment",
+        "components": [
+          { "name": "owner", "type": "address", "internalType": "address" },
+          { "name": "stakeAmount", "type": "uint256", "internalType": "uint256" },
+          { "name": "remainingStake", "type": "uint256", "internalType": "uint256" },
+          { "name": "durationDays", "type": "uint16", "internalType": "uint16" },
+          { "name": "dailyTargetMinutes", "type": "uint16", "internalType": "uint16" },
+          { "name": "currentDay", "type": "uint16", "internalType": "uint16" },
+          { "name": "failedCount", "type": "uint8", "internalType": "uint8" },
+          { "name": "earlyFinishCount", "type": "uint8", "internalType": "uint8" },
+          { "name": "proofCount", "type": "uint16", "internalType": "uint16" },
+          { "name": "status", "type": "uint8", "internalType": "enum ForgeProtocol.CommitmentStatus" },
+          { "name": "isRedemption", "type": "bool", "internalType": "bool" },
+          { "name": "createdAt", "type": "uint256", "internalType": "uint256" },
+          { "name": "lastProofAt", "type": "uint256", "internalType": "uint256" }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "commitments",
+    "inputs": [
+      { "name": "", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [
+      { "name": "owner", "type": "address", "internalType": "address" },
+      { "name": "stakeAmount", "type": "uint256", "internalType": "uint256" },
+      { "name": "remainingStake", "type": "uint256", "internalType": "uint256" },
+      { "name": "durationDays", "type": "uint16", "internalType": "uint16" },
+      { "name": "dailyTargetMinutes", "type": "uint16", "internalType": "uint16" },
+      { "name": "currentDay", "type": "uint16", "internalType": "uint16" },
+      { "name": "failedCount", "type": "uint8", "internalType": "uint8" },
+      { "name": "earlyFinishCount", "type": "uint8", "internalType": "uint8" },
+      { "name": "proofCount", "type": "uint16", "internalType": "uint16" },
+      { "name": "status", "type": "uint8", "internalType": "enum ForgeProtocol.CommitmentStatus" },
+      { "name": "isRedemption", "type": "bool", "internalType": "bool" },
+      { "name": "createdAt", "type": "uint256", "internalType": "uint256" },
+      { "name": "lastProofAt", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "submitProof",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "internalType": "uint256" },
+      { "name": "dayNumber", "type": "uint16", "internalType": "uint16" },
+      { "name": "proofHash", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "actualMinutes", "type": "uint16", "internalType": "uint16" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "completeCommitment",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "internalType": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "slash",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "string", "internalType": "string" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "redeem",
+    "inputs": [
+      { "name": "oldCommitmentId", "type": "uint256", "internalType": "uint256" },
+      { "name": "newCommitmentId", "type": "uint256", "internalType": "uint256" },
+      { "name": "stakeAmount", "type": "uint256", "internalType": "uint256" },
+      { "name": "durationDays", "type": "uint16", "internalType": "uint16" },
+      { "name": "dailyTargetMinutes", "type": "uint16", "internalType": "uint16" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "globalState",
+    "inputs": [],
+    "outputs": [
+      { "name": "authority", "type": "address", "internalType": "address" },
+      { "name": "token", "type": "address", "internalType": "contract IERC20" },
+      { "name": "charityBalance", "type": "uint256", "internalType": "uint256" },
+      { "name": "rewardsBalance", "type": "uint256", "internalType": "uint256" },
+      { "name": "treasuryBalance", "type": "uint256", "internalType": "uint256" },
+      { "name": "backupBalance", "type": "uint256", "internalType": "uint256" },
+      { "name": "totalSlashed", "type": "uint256", "internalType": "uint256" },
+      { "name": "totalRewarded", "type": "uint256", "internalType": "uint256" },
+      { "name": "commitmentNonce", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "userProfiles",
+    "inputs": [
+      { "name": "", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [
+      { "name": "totalCommitments", "type": "uint16", "internalType": "uint16" },
+      { "name": "activeCommitments", "type": "uint8", "internalType": "uint8" },
+      { "name": "totalCompleted", "type": "uint16", "internalType": "uint16" },
+      { "name": "totalFailed", "type": "uint16", "internalType": "uint16" },
+      { "name": "redemptionCount", "type": "uint8", "internalType": "uint8" },
+      { "name": "lastRedemptionTs", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proofHashes",
+    "inputs": [
+      { "name": "", "type": "uint256", "internalType": "uint256" },
+      { "name": "", "type": "uint16", "internalType": "uint16" }
+    ],
+    "outputs": [
+      { "name": "", "type": "bytes32", "internalType": "bytes32" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "userNonce",
+    "inputs": [
+      { "name": "", "type": "address", "internalType": "address" }
+    ],
+    "outputs": [
+      { "name": "", "type": "uint256", "internalType": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "CommitmentCreated",
+    "inputs": [
+      { "name": "owner", "type": "address", "indexed": true, "internalType": "address" },
+      { "name": "commitmentId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+      { "name": "stakeAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "durationDays", "type": "uint16", "indexed": false, "internalType": "uint16" },
+      { "name": "dailyTargetMinutes", "type": "uint16", "indexed": false, "internalType": "uint16" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProofSubmitted",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+      { "name": "dayNumber", "type": "uint16", "indexed": false, "internalType": "uint16" },
+      { "name": "proofHash", "type": "bytes32", "indexed": false, "internalType": "bytes32" },
+      { "name": "actualMinutes", "type": "uint16", "indexed": false, "internalType": "uint16" },
+      { "name": "isEarlyFinish", "type": "bool", "indexed": false, "internalType": "bool" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CommitmentCompleted",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+      { "name": "owner", "type": "address", "indexed": true, "internalType": "address" },
+      { "name": "rewardAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "penaltyPercent", "type": "uint8", "indexed": false, "internalType": "uint8" },
+      { "name": "earlyFinishCount", "type": "uint8", "indexed": false, "internalType": "uint8" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "SlashExecuted",
+    "inputs": [
+      { "name": "commitmentId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+      { "name": "slashedAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "failCount", "type": "uint8", "indexed": false, "internalType": "uint8" },
+      { "name": "charityAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "rewardsAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "treasuryAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "backupAmount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "newStatus", "type": "uint8", "indexed": false, "internalType": "uint8" }
+    ],
+    "anonymous": false
+  },
+  { "type": "error", "name": "CommitmentAlreadyExists", "inputs": [] },
+  { "type": "error", "name": "CommitmentNotActive", "inputs": [] },
+  { "type": "error", "name": "CommitmentNotComplete", "inputs": [] },
+  { "type": "error", "name": "InsufficientProofMinutes", "inputs": [] },
+  { "type": "error", "name": "InvalidDayNumber", "inputs": [] },
+  { "type": "error", "name": "InvalidDuration", "inputs": [] },
+  { "type": "error", "name": "InvalidProofHash", "inputs": [] },
+  { "type": "error", "name": "InvalidStakeAmount", "inputs": [] },
+  { "type": "error", "name": "InvalidTargetMinutes", "inputs": [] },
+  { "type": "error", "name": "MaxActiveCommitments", "inputs": [] },
+  { "type": "error", "name": "MaxFailuresReached", "inputs": [] },
+  { "type": "error", "name": "ProofAlreadySubmitted", "inputs": [] },
+  { "type": "error", "name": "RedemptionCooldown", "inputs": [] },
+  { "type": "error", "name": "ReentrancyGuardReentrantCall", "inputs": [] },
+  { "type": "error", "name": "SlashWindowNotReached", "inputs": [] },
+  { "type": "error", "name": "UnauthorizedAuthority", "inputs": [] },
+  {
+    "type": "error",
+    "name": "SafeERC20FailedOperation",
+    "inputs": [
+      { "name": "token", "type": "address", "internalType": "address" }
+    ]
+  }
+]

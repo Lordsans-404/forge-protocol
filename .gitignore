@@ -1,0 +1,86 @@
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ── Next.js build output ───────────────────────────────────────
+.next/
+apps/web/.next/
+/out/
+apps/web/out/
+/build/
+
+# ── Environment variables ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+apps/web/.env
+apps/web/.env.*
+!apps/web/.env.example
+
+# ── Foundry / Smart Contracts ──────────────────────────────────
+# compiled artifacts (forge build)
+contracts/out/
+# solidity compiler cache
+contracts/cache/
+# dependencies — restore with: forge install
+contracts/lib/
+# forge flatten output
+contracts/flattened.sol
+# NOTE: contracts/broadcast/ is kept — useful deployment receipts
+
+# ── Test & Coverage ────────────────────────────────────────────
+/coverage/
+
+# ── Logs ──────────────────────────────────────────────────────
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# ── OS & Editor ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.pem
+.vscode/settings.json
+
+# ── TypeScript ─────────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Vercel ─────────────────────────────────────────────────────
+.vercel/
+
+# ── AI context & internal notes ───────────────────────────────
+/.codex/
+progress_daily/
+CLAUDE.MD
+GEMINI.md
+
+# ── Wallet / authority keys (NEVER commit!) ───────────────────
+authority.json
+deployer.json
+*.key.json
+wallet.json
+
+# ── Legacy Solana artifacts (fully decommissioned) ────────────
+target/
+.anchor/
+test-ledger/
+deploy/
+programs/
+
+# ── Misc scratch / one-off files ──────────────────────────────
+supabase_cron.sql
+scratch/
+scratch.js
+scripts/test-batch-slash.mjs
+rename.js
+check-schema-simple.mjs
+test-db.js

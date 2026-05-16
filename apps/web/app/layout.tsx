@@ -1,0 +1,51 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"; // updated, swap display font to match Stitch typography
+import "./globals.css";
+import Navbar from "@/components/Navbar";
+import { WalletProvider } from "@/components/providers/WalletProvider";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const playfair = Space_Grotesk({ // updated, reuse the existing display variable name for dashboard headings
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "Forge Protocol — Stake Your Habits",
+  description: "The first on-chain accountability protocol that turns your daily commitments into staked assets with AI validation.",
+  icons: {
+    icon: "/forge-logo.svg",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
+    >
+      <body className="relative flex min-h-full flex-col bg-background text-foreground"> {/* updated, use shared Stitch-like surface tokens at the app shell */}
+        <WalletProvider>
+          <Navbar />
+          <main className="flex-1 w-full flex flex-col">
+            {children}
+          </main>
+        </WalletProvider>
+      </body>
+    </html>
+  );
+}
