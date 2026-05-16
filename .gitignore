@@ -58,7 +58,8 @@ next-env.d.ts
 .vercel/
 
 # ── AI context & internal notes ───────────────────────────────
-/.codex/
+.codex
+.codex/
 progress_daily/
 CLAUDE.MD
 GEMINI.md
