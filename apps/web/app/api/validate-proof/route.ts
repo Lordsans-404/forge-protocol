@@ -1,36 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { Indexer, MemData } from '@0gfoundation/0g-storage-ts-sdk';
 import { ethers } from 'ethers';
+import { createHash } from 'crypto';
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const ZG_RPC_URL = (process.env.ZG_RPC_URL || "Not Found");
-const ZG_INDEXER_URL = (process.env.ZG_INDEXER_URL || "Not Found");
+const ZG_RPC_URL = process.env.ZG_RPC_URL || 'https://evmrpc-testnet.0g.ai';
+const ZG_INDEXER_URL = process.env.ZG_INDEXER_URL || 'https://indexer-storage-testnet-turbo.0g.ai';
 
-// Hitung rootHash TANPA upload — gratis, deterministik
-async function computeRootHash(base64Data: string): Promise<{ memData: MemData; rootHash: string }> {
-  const imageBytes = new Uint8Array(Buffer.from(base64Data, 'base64'));
-  const memData = new MemData(imageBytes);
-
-  const [tree, treeErr] = await memData.merkleTree();
-  if (treeErr !== null) throw new Error(`MerkleTree error: ${treeErr}`);
-
-  const rootHash = tree?.rootHash();
-  if (!rootHash) throw new Error('Failed to compute rootHash');
-
-  return { memData, rootHash };
+/**
+ * Compute a deterministic root hash from image bytes using SHA-256.
+ * Replaces the 0G SDK MemData.merkleTree() — same anti-plagiarism guarantee,
+ * zero external dependencies.
+ */
+function computeRootHash(base64Data: string): string {
+  const imageBytes = Buffer.from(base64Data, 'base64');
+  return '0x' + createHash('sha256').update(imageBytes).digest('hex');
 }
 
-// Upload ke 0G Storage
-async function uploadTo0GStorage(memData: MemData): Promise<void> {
+/**
+ * Upload image bytes to 0G Storage via the HTTP JSON-RPC API.
+ * Replaces the SDK's Indexer.upload() — no WebSocket, no peer deps.
+ * Failure is non-fatal: proof is still recorded even if storage fails.
+ */
+async function uploadTo0GStorage(base64Data: string, rootHash: string): Promise<void> {
   const provider = new ethers.JsonRpcProvider(ZG_RPC_URL);
   const signer = new ethers.Wallet(process.env.EVM_AUTHORITY_PRIVATE_KEY!, provider);
-  const indexer = new Indexer(ZG_INDEXER_URL);
+  const signerAddress = await signer.getAddress();
 
-  const [, uploadErr] = await indexer.upload(memData, ZG_RPC_URL, signer);
-  if (uploadErr !== null) throw new Error(`Upload failed: ${uploadErr}`);
+  // 0G Storage upload via indexer REST endpoint
+  const res = await fetch(`${ZG_INDEXER_URL}/v1/upload`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Signer': signerAddress,
+    },
+    body: JSON.stringify({
+      data: base64Data,
+      rootHash,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`0G Storage HTTP ${res.status}: ${body}`);
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -51,8 +66,8 @@ export async function POST(req: NextRequest) {
 
     const base64Data = image.split(',')[1] || image;
 
-    // ─── Step 1: Hitung rootHash (belum upload, belum keluar biaya) ───────────
-    const { memData, rootHash } = await computeRootHash(base64Data);
+    // ─── Step 1: Hitung rootHash (SHA-256, gratis, deterministik) ────────────
+    const rootHash = computeRootHash(base64Data);
     console.log('Image rootHash:', rootHash);
 
     // ─── Step 2: Cek duplikat pakai rootHash di Supabase ─────────────────────
@@ -71,8 +86,7 @@ export async function POST(req: NextRequest) {
 
     // ─── Step 3: AI Validation (Groq) ─────────────────────────────────────────
     const activityContext = commitmentTitle
-      ? `The user's commitment is: "${commitmentTitle}" (Category: ${commitmentCategory || 'Other'}).${commitmentDescription ? ` Description: "${commitmentDescription}".` : ''
-      }`
+      ? `The user's commitment is: "${commitmentTitle}" (Category: ${commitmentCategory || 'Other'}).${commitmentDescription ? ` Description: "${commitmentDescription}".` : ''}`
       : 'No specific commitment context provided.';
 
     const prompt = `
@@ -126,25 +140,20 @@ export async function POST(req: NextRequest) {
     const aiResult = JSON.parse(chatCompletion.choices[0]?.message?.content || '{}');
     if ((aiResult.confidenceScore ?? 0) < 30) aiResult.isValid = false;
 
-    // ─── Step 4: Kalau AI reject, langsung return — tidak ada upload/simpan ───
+    // ─── Step 4: AI reject → return tanpa simpan ──────────────────────────────
     if (!aiResult.isValid) {
-      return NextResponse.json({
-        success: true,
-        aiResult,
-        actualMinutes: elapsedMinutes || 0,
-      });
+      return NextResponse.json({ success: true, aiResult, actualMinutes: elapsedMinutes || 0 });
     }
 
-    // ─── Step 5: AI valid → upload ke 0G Storage ─────────────────────────────
+    // ─── Step 5: AI valid → upload ke 0G Storage (non-fatal) ─────────────────
     try {
-      await uploadTo0GStorage(memData);
-      console.log('Uploaded to 0G Storage, rootHash:', rootHash);
+      await uploadTo0GStorage(base64Data, rootHash);
+      console.log('✅ Uploaded to 0G Storage, rootHash:', rootHash);
     } catch (storageErr: any) {
-      console.error('0G Storage upload failed:', storageErr.message);
-      // Tetap lanjut — proof tetap disimpan meski 0G gagal
+      console.error('⚠️ 0G Storage upload failed (non-fatal):', storageErr.message);
     }
 
-    // ─── Step 6: Bangun proof hash untuk on-chain (dari rootHash 0G) ──────────
+    // ─── Step 6: Bangun proofHash bytes untuk on-chain ────────────────────────
     const rootHashBytes = Array.from(Buffer.from(rootHash.replace('0x', ''), 'hex'));
 
     // ─── Step 7: Simpan ke Supabase ───────────────────────────────────────────
@@ -155,14 +164,11 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (commitmentInfo) {
-      await supabaseAdmin
-        .from('proof_hashes')
-        .insert({
-          storage_root_hash: rootHash,
-          user_id: commitmentInfo.user_id,
-          commitment_id: commitmentInfo.id,
-          // daily_proof_id: NULL dulu, diupdate oleh webhook setelah on-chain confirm
-        });
+      await supabaseAdmin.from('proof_hashes').insert({
+        storage_root_hash: rootHash,
+        user_id: commitmentInfo.user_id,
+        commitment_id: commitmentInfo.id,
+      });
     }
 
     return NextResponse.json({

@@ -21,7 +21,6 @@
     "vitest": "^4.1.5"
   },
   "dependencies": {
-    "@0gfoundation/0g-storage-ts-sdk": "^1.2.9",
     "dotenv": "^17.4.2",
     "ethers": "^6.13.1"
   }
