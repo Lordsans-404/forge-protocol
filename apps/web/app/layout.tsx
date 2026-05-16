@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google"; // updated, swap display font to match Stitch typography
 import "./globals.css";
-import dynamic from "next/dynamic";
-
-const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
-const WalletProvider = dynamic(
-  () => import("@/components/providers/WalletProvider").then(mod => mod.WalletProvider),
-  { ssr: false }
-);
+import { ClientProviders } from "@/components/providers/ClientProviders";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,12 +38,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="relative flex min-h-full flex-col bg-background text-foreground"> {/* updated, use shared Stitch-like surface tokens at the app shell */}
-        <WalletProvider>
-          <Navbar />
-          <main className="flex-1 w-full flex flex-col">
-            {children}
-          </main>
-        </WalletProvider>
+        <ClientProviders>
+          {children}
+        </ClientProviders>
       </body>
     </html>
   );
