@@ -6,7 +6,10 @@ import dynamic from 'next/dynamic';
 
 import { LayoutDashboard } from 'lucide-react';
 
-import { WalletButton } from '@/components/WalletButton';
+const WalletButton = dynamic(
+  () => import('@/components/WalletButton').then(mod => mod.WalletButton),
+  { ssr: false }
+);
 const WalletMultiButton = WalletButton;
 
 export default function Navbar() {

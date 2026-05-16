@@ -5,8 +5,10 @@ import dynamic from 'next/dynamic';
 import { useEffect, useRef, useCallback } from 'react';
 
 // Import the WalletMultiButton dynamically to avoid SSR hydration errors
-import { WalletButton } from '@/components/WalletButton';
-const WalletMultiButton = WalletButton;
+const WalletMultiButton = dynamic(
+  () => import('@/components/WalletButton').then(mod => mod.WalletButton),
+  { ssr: false }
+);
 
 const ORBITS = [
   { rx: 90, ry: 90, tiltX: Math.PI * 0.15, tiltY: 0, tiltZ: 0, speed: 0.008, angle: 0 },

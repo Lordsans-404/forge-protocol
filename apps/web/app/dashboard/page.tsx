@@ -2,7 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { WalletButton } from '@/components/WalletButton';
+import dynamic from 'next/dynamic';
+const WalletButton = dynamic(
+  () => import('@/components/WalletButton').then(mod => mod.WalletButton),
+  { ssr: false }
+);
 import { Activity, ArrowDownUp, Flame, Loader2, Medal, Plus, Target, Wallet, TrendingDown, ChevronLeft, ChevronRight } from 'lucide-react'; // updated, drop an unused icon import after the visual refactor
 import Link from 'next/link';
 
